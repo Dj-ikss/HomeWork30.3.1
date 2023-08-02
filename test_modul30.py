@@ -2,6 +2,8 @@ import time
 from selenium.webdriver.common.by import By
 from selenium import webdriver
 import pytest
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
 
 @pytest.fixture(autouse=True)
 def testing():
@@ -15,12 +17,16 @@ def testing():
 
 
 def test_show_my_pets():
-   pytest.driver.find_element(By.ID, 'email').send_keys('Ваш аккаунт')
-   pytest.driver.find_element(By.ID, 'pass').send_keys('ваш аккаунт')
+   pytest.driver.find_element(By.ID, 'email').send_keys('Ваш аккаунт')    # Введите вашу учётную запись
+   pytest.driver.find_element(By.ID, 'pass').send_keys('Ваш аккаунт')     # Введите вашу учётную запись
    pytest.driver.find_element(By.CSS_SELECTOR, 'button[type="submit"]').click()
+
+   WebDriverWait(pytest.driver, 6).until(EC.presence_of_element_located((By.TAG_NAME, 'h1'))) # Явное ожидание
+
    assert pytest.driver.find_element(By.TAG_NAME, 'h1').text == "PetFriends"
    pytest.driver.find_element(By.XPATH, '//*[@id="navbarNav"]/ul/li[1]/a').click()
-   time.sleep(2)
+
+   pytest.driver.implicitly_wait(5)            # Неявное ожидание 5 сек
 
    my_pets = pytest.driver.find_elements(By.XPATH, '//*[@id="all_my_pets"]/table/tbody/tr')
    num_pet = pytest.driver.find_element(By.XPATH, '/html/body/div[1]/div/div[1]')
